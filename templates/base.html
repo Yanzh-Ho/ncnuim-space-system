@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}暨大管院空間系統{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+	<nav class="nav">
+		<a class="brand" href="/">暨大管院空間系統</a>
+		<span class="spacer"></span>
+		{% if user %}
+			<span class="who">{{ user.name }}</span>
+			<a href="/account/logout">登出</a>
+		{% else %}
+			<a href="/account/login">登入</a>
+		{% endif %}
+	</nav>
+	<main class="box">
+		{% block content %}{% endblock %}
+	</main>
+</body>
+</html>
