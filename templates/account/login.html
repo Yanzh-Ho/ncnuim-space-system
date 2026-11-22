@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width:340px; margin:0 auto">
+	<h1>登入</h1>
+	{% if msg %}<div class="msg">{{ msg }}</div>{% endif %}
+	<form class="form" method="post" action="/account/login">
+		<label>帳號</label>
+		<input type="text" name="username" required>
+		<label>密碼</label>
+		<input type="password" name="password" required>
+		<button class="btn" type="submit">登入</button>
+	</form>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>暨大管理學院 空間與排課系統</h1>
+{% if user %}
+	<p>歡迎，{{ user.name }}！你的身分是 {{ user.role }}。</p>
+{% else %}
+	<p>請先 <a href="/account/login">登入</a>。</p>
+{% endif %}
+{% endblock %}
