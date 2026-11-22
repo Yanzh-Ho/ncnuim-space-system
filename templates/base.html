@@ -2,24 +2,77 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="UTF-8">
-<title>{% block title %}暨大管院空間系統{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}IM Space｜暨大資管空間排課系統{% endblock %}</title>
+<link rel="icon" href="/static/logo.png">
+<!-- 字體：思源黑體（內文）＋思源宋體（標題） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
+{% block head %}{% endblock %}
 </head>
 <body>
-	<nav class="nav">
-		<a class="brand" href="/">暨大管院空間系統</a>
-		{% if user and user.role == 'admin' %}<a href="/account/admin">帳號審核</a>{% endif %}
-		<span class="spacer"></span>
-		{% if user %}
-			<span class="who">{{ user.name }}</span>
-			<a href="/account/logout">登出</a>
-		{% else %}
-			<a href="/account/login">登入</a>
-			<a href="/account/register">註冊</a>
-		{% endif %}
-	</nav>
-	<main class="box">
+	{% set path = request.url.path %}
+
+	<!-- ===== 導覽列 ===== -->
+	<header class="topbar">
+		<div class="inner">
+			<a class="brand" href="/">
+				<img src="/static/logo.png" alt="暨大資管系徽">
+				<span>
+					<div class="name">IM <span>Space</span> ｜ 空間排課系統</div>
+					<div class="sub">國立暨南國際大學 資訊管理學系</div>
+				</span>
+			</a>
+
+			<!-- 各模組負責人在這裡加自己的入口，例如：
+			     <a href="/space/" class="{{ 'active' if path.startswith('/space') }}">空間查詢</a> -->
+			<nav class="menu">
+				<a href="/" class="{{ 'active' if path == '/' }}">首頁</a>
+				<a href="/space/" class="{{ 'active' if path.startswith('/space') }}">空間查詢</a>
+				<a href="/booking/" class="{{ 'active' if path.startswith('/booking') }}">預約借用</a>
+				<a href="/course/" class="{{ 'active' if path.startswith('/course') }}">課程排課</a>
+				{% if user and user.role == 'admin' %}
+				<a href="/account/admin" class="{{ 'active' if path.startswith('/account/admin') }}">帳號審核</a>
+				{% endif %}
+			</nav>
+
+			<span class="spacer"></span>
+
+			{% if user %}
+				<div class="userchip">
+					<span class="avatar">{{ user.name[0] }}</span>
+					<span>
+						<div class="uname">{{ user.name }}</div>
+						<div class="urole">{{ {'admin':'管理員', 'teacher':'老師', 'student':'學生'}[user.role] }}</div>
+					</span>
+					<a class="btn ghost sm" href="/account/logout">登出</a>
+				</div>
+			{% else %}
+				<div class="userchip">
+					<a class="btn ghost sm" href="/account/login">登入</a>
+					<a class="btn sm" href="/account/register">註冊</a>
+				</div>
+			{% endif %}
+		</div>
+	</header>
+
+	{% block hero %}{% endblock %}
+
+	<main class="{% block main_class %}container{% endblock %}">
 		{% block content %}{% endblock %}
 	</main>
+
+	<!-- ===== 頁尾 ===== -->
+	<footer class="footer">
+		<div class="inner">
+			<img src="/static/logo.png" alt="">
+			<div>
+				<div class="title">國立暨南國際大學 資訊管理學系</div>
+				<div>IM Space 空間與排課系統｜軟體工程 期末專案</div>
+			</div>
+		</div>
+		<div class="copy">© 2026 NCNU Department of Information Management</div>
+	</footer>
 </body>
 </html>

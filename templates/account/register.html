@@ -1,22 +1,29 @@
 {% extends "base.html" %}
+{% block title %}註冊｜IM Space{% endblock %}
 {% block content %}
-<div style="max-width:340px; margin:0 auto">
-	<h1>註冊</h1>
-	{% if msg %}<div class="msg">{{ msg }}</div>{% endif %}
-	<form class="form" method="post" action="/account/register">
-		<label>帳號</label>
-		<input type="text" name="username" required>
-		<label>密碼</label>
-		<input type="password" name="password" required>
-		<label>姓名</label>
-		<input type="text" name="name" required>
-		<label>身分</label>
-		<select name="role">
-			<option value="student">學生</option>
-			<option value="teacher">老師</option>
-		</select>
-		<button class="btn" type="submit">註冊</button>
-	</form>
-	<p style="text-align:center; color:#777; font-size:14px">註冊後需等管理員審核通過才能登入</p>
+<div class="auth">
+	<div class="head">
+		<img src="/static/logo.png" alt="系徽">
+		<h1>建立帳號</h1>
+		<p>註冊後需等管理員審核通過才能登入</p>
+	</div>
+	<div class="card">
+		{% if msg %}<div class="msg error">{{ msg }}</div>{% endif %}
+		<form class="form" method="post" action="/account/register">
+			<label>帳號</label>
+			<input type="text" name="username" placeholder="英文或數字" required autofocus>
+			<label>密碼</label>
+			<input type="password" name="password" required>
+			<label>姓名</label>
+			<input type="text" name="name" placeholder="例如：王小明" required>
+			<label>身分</label>
+			<select name="role">
+				<option value="student">學生</option>
+				<option value="teacher">老師</option>
+			</select>
+			<button class="btn block" type="submit">註冊</button>
+		</form>
+	</div>
+	<div class="foot">已經有帳號了？<a href="/account/login">登入</a></div>
 </div>
 {% endblock %}

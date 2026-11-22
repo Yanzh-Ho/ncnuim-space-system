@@ -1,15 +1,22 @@
 {% extends "base.html" %}
+{% block title %}登入｜IM Space{% endblock %}
 {% block content %}
-<div style="max-width:340px; margin:0 auto">
-	<h1>登入</h1>
-	{% if msg %}<div class="msg">{{ msg }}</div>{% endif %}
-	<form class="form" method="post" action="/account/login">
-		<label>帳號</label>
-		<input type="text" name="username" required>
-		<label>密碼</label>
-		<input type="password" name="password" required>
-		<button class="btn" type="submit">登入</button>
-	</form>
-	<p style="text-align:center"><a href="/account/register">還沒有帳號？註冊</a></p>
+<div class="auth">
+	<div class="head">
+		<img src="/static/logo.png" alt="系徽">
+		<h1>登入</h1>
+		<p>國立暨南國際大學 資訊管理學系</p>
+	</div>
+	<div class="card">
+		{% if msg %}<div class="msg {{ 'ok' if '成功' in msg else 'error' }}">{{ msg }}</div>{% endif %}
+		<form class="form" method="post" action="/account/login">
+			<label>帳號</label>
+			<input type="text" name="username" placeholder="請輸入帳號" required autofocus>
+			<label>密碼</label>
+			<input type="password" name="password" placeholder="請輸入密碼" required>
+			<button class="btn block" type="submit">登入</button>
+		</form>
+	</div>
+	<div class="foot">還沒有帳號？<a href="/account/register">立即註冊</a></div>
 </div>
 {% endblock %}

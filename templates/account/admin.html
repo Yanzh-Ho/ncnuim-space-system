@@ -1,26 +1,48 @@
 {% extends "base.html" %}
+{% block title %}帳號審核｜IM Space{% endblock %}
 {% block content %}
-<h1>帳號審核</h1>
-<table>
-	<tr><th>帳號</th><th>姓名</th><th>身分</th><th>狀態</th><th>操作</th></tr>
-	{% for u in users %}
-	<tr>
-		<td>{{ u.id }}</td>
-		<td>{{ u.name }}</td>
-		<td>{{ {'admin':'管理員', 'teacher':'老師', 'student':'學生'}[u.role] }}</td>
-		<td>{% if u.approved %}已通過{% else %}<b style="color:#c62828">待審核</b>{% endif %}</td>
-		<td>
-		{% if not u.approved %}
-			<form style="display:inline" method="post" action="/account/admin/approve/{{ u.id }}">
-				<button class="btn green">通過</button>
-			</form>
-			<form style="display:inline" method="post" action="/account/admin/reject/{{ u.id }}"
-				onsubmit="return confirm('確定拒絕並刪除這個帳號？')">
-				<button class="btn red">拒絕</button>
-			</form>
-		{% endif %}
-		</td>
-	</tr>
-	{% endfor %}
-</table>
+{% set pending = users | rejectattr('approved') | list %}
+<div class="page-head">
+	<div class="eyebrow">Admin</div>
+	<h1>帳號審核</h1>
+	<p>共 {{ users | length }} 個帳號，<b style="color:var(--warn)">{{ pending | length }}</b> 個等待審核</p>
+</div>
+
+<div class="card flush">
+	<table>
+		<thead>
+			<tr><th>帳號</th><th>姓名</th><th>身分</th><th>狀態</th><th style="text-align:right">操作</th></tr>
+		</thead>
+		<tbody>
+		{% for u in users %}
+			<tr>
+				<td><code>{{ u.id }}</code></td>
+				<td>{{ u.name }}</td>
+				<td>
+					{% if u.role == 'admin' %}<span class="badge primary">管理員</span>
+					{% elif u.role == 'teacher' %}<span class="badge muted">老師</span>
+					{% else %}<span class="badge muted">學生</span>{% endif %}
+				</td>
+				<td>
+					{% if u.approved %}<span class="badge ok">已通過</span>
+					{% else %}<span class="badge wait">待審核</span>{% endif %}
+				</td>
+				<td style="text-align:right">
+				{% if not u.approved %}
+					<form class="inline" method="post" action="/account/admin/approve/{{ u.id }}">
+						<button class="btn green sm">通過</button>
+					</form>
+					<form class="inline" method="post" action="/account/admin/reject/{{ u.id }}"
+						onsubmit="return confirm('確定拒絕並刪除這個帳號？')">
+						<button class="btn red sm">拒絕</button>
+					</form>
+				{% else %}
+					<span style="color:var(--muted)">—</span>
+				{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
 {% endblock %}
