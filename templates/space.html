@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>空間預約</title>
+</head>
+<body>
+
+    <h1>空間預約系統</h1>
+
+    <h2>可預約空間</h2>
+
+    {% for space in spaces %}
+        <div>
+            <h3>{{ space[1] }}</h3>
+            <p>位置：{{ space[2] }}</p>
+            <p>容納人數：{{ space[3] }} 人</p>
+            <p>介紹：{{ space[4] }}</p>
+            <hr>
+        </div>
+    {% endfor %}
+
+</body>
+</html>
