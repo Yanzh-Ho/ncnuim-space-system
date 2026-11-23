@@ -6,6 +6,7 @@ from fastapi.exception_handlers import http_exception_handler
 from starlette.middleware.sessions import SessionMiddleware
 from db import lifespan
 from auth import currentUser
+from routes.space import router as space_router
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="ncnuim-space-secret")
@@ -14,6 +15,10 @@ templates = Jinja2Templates(directory="templates")
 # ===== 各模組的 router =====
 from routes.account import router as accountRoute
 app.include_router(accountRoute, prefix="/account")
+
+# 空間預約模組
+from routes.space import router as spaceRoute
+app.include_router(spaceRoute, prefix="/space")
 
 # 各模組負責人在這裡加上自己的 router，例如：
 # from routes.space import router as spaceRoute
