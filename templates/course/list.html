@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}課程排課｜IM Space{% endblock %}
+{% block content %}
+<div class="page-head">
+	<div class="eyebrow">Course</div>
+	{% if user.role == 'admin' %}
+		<h1>全部課程</h1>
+		<p>共 {{ courses | length }} 堂課</p>
+	{% else %}
+		<h1>我的課程</h1>
+		<p>{{ user.name }}，你這學期共有 {{ courses | length }} 堂課</p>
+	{% endif %}
+</div>
+
+<div class="card flush">
+	<table>
+		<thead>
+			<tr>
+				<th>課程名稱</th>
+				{% if user.role == 'admin' %}<th>授課老師</th>{% endif %}
+				<th>星期</th>
+				<th>時間</th>
+				<th>教室</th>
+				<th>年級</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for c in courses %}
+			<tr>
+				<td><b>{{ c.title }}</b></td>
+				{% if user.role == 'admin' %}<td>{{ c.teacher_name }}</td>{% endif %}
+				<td>星期{{ week[c.weekday] }}</td>
+				<td>{{ c.start_time.strftime('%H:%M') }} – {{ c.end_time.strftime('%H:%M') }}</td>
+				<td>{{ c.room_code or '—' }}</td>
+				<td><span class="badge muted">{{ c.grade or '—' }}</span></td>
+			</tr>
+		{% else %}
+			<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:40px">目前沒有課程</td></tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

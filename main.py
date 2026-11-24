@@ -15,6 +15,9 @@ templates = Jinja2Templates(directory="templates")
 from routes.account import router as accountRoute
 app.include_router(accountRoute, prefix="/account")
 
+from routes.course import router as courseRoute     # 模組 3：課程排課
+app.include_router(courseRoute, prefix="/course")
+
 # 各模組負責人在這裡加上自己的 router，例如：
 # from routes.space import router as spaceRoute
 # app.include_router(spaceRoute, prefix="/space")
