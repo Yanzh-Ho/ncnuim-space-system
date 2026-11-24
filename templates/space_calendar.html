@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教室週行事曆</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        h1, h2 {
+            color: #24364b;
+        }
+
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .calendar th,
+        .calendar td {
+            border: 1px solid #ccc;
+            padding: 10px 5px;
+            text-align: center;
+        }
+
+        .calendar th {
+            background: #eaf1f8;
+        }
+
+        .calendar td {
+            height: 65px;
+        }
+
+        .time {
+            background: #f4f6f8;
+            font-weight: bold;
+            width: 75px;
+        }
+
+        .available {
+            background: #e8f5e9;
+            color: #237a36;
+        }
+
+        .approved {
+            background: #fce8e8;
+            color: #b42318;
+        }
+
+        .pending {
+            background: #fff4dc;
+            color: #a66a00;
+        }
+
+        .rejected,
+        .cancelled {
+            background: #eeeeee;
+            color: #666;
+        }
+
+        .booking {
+            font-size: 13px;
+            margin: 3px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .navigation {
+            margin: 20px 0;
+        }
+
+        .navigation a {
+            margin-right: 15px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>{{ space.name }}－週行事曆</h1>
+
+    <p>位置：{{ space.location }}</p>
+    <p>容納人數：{{ space.capacity }} 人</p>
+
+    <h2>本週預約狀況</h2>
+
+    <p>
+        {{ week_dates[0].strftime('%Y-%m-%d') }}
+        至
+        {{ week_dates[6].strftime('%Y-%m-%d') }}
+    </p>
+
+    <div class="navigation">
+        <a href="/space/{{ space.id }}/calendar?week_offset={{ week_offset - 1 }}">
+            上一週
+        </a>
+
+        <a href="/space/{{ space.id }}/calendar?week_offset=0">
+            本週
+        </a>
+
+        <a href="/space/{{ space.id }}/calendar?week_offset={{ week_offset + 1 }}">
+            下一週
+        </a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="calendar">
+
+            <tr>
+                <th>時間</th>
+
+                {% for day in week_dates %}
+                <th>
+                    星期{{ ['一','二','三','四','五','六','日'][day.weekday()] }}
+                    <br>
+                    {{ day.strftime('%m/%d') }}
+                </th>
+                {% endfor %}
+            </tr>
+
+            {% for row in calendar_rows %}
+            <tr>
+
+                <td class="time">
+                    {{ row.time }}
+                </td>
+
+                {% for cell in row.cells %}
+                <td class="{% if not cell.bookings %}available{% endif %}">
+
+                    {% if cell.bookings %}
+
+                        {% for booking in cell.bookings %}
+
+                            <div class="booking
+                                {{ booking.status }}">
+
+                                {% if booking.status == 'approved' %}
+                                    已核准
+                                {% elif booking.status == 'pending' %}
+                                    審核中
+                                {% elif booking.status == 'rejected' %}
+                                    已拒絕
+                                {% elif booking.status == 'cancelled' %}
+                                    已取消
+                                {% endif %}
+
+                                <br>
+
+                                {{ booking.applicant }}
+
+                                <br>
+
+                                {{ booking.purpose }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <a href="/booking/{{ space.id }}/new?date={{ cell.date }}&start_time={{ cell.start_time }}">
+        可預約
+    </a>
+
+                    {% endif %}
+
+                </td>
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+    <br>
+
+    <a href="/space/spaces">返回空間列表</a>
+
+</body>
+</html>

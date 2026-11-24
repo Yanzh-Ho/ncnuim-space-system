@@ -30,7 +30,7 @@
 			<nav class="menu">
 				<a href="/" class="{{ 'active' if path == '/' }}">首頁</a>
 				<a href="/space/" class="{{ 'active' if path.startswith('/space') }}">空間查詢</a>
-				<a href="/booking/" class="{{ 'active' if path.startswith('/booking') }}">預約借用</a>
+				<a href="/space/spaces" class="{{ 'active' if path.startswith('/space') }}">預約借用</a>
 				<a href="/course/" class="{{ 'active' if path.startswith('/course') }}">課程排課</a>
 				{% if user and user.role == 'admin' %}
 				<a href="/account/admin" class="{{ 'active' if path.startswith('/account/admin') }}">帳號審核</a>

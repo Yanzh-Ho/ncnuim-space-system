@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -12,10 +13,16 @@
 
     {% for space in spaces %}
         <div>
-            <h3>{{ space[1] }}</h3>
-            <p>位置：{{ space[2] }}</p>
-            <p>容納人數：{{ space[3] }} 人</p>
-            <p>介紹：{{ space[4] }}</p>
+            <h3>{{ space.name }}</h3>
+
+            <a href="/space/{{ space.id }}/calendar">
+                查看週行事曆
+            </a>
+
+            <p>位置：{{ space.location }}</p>
+            <p>容納人數：{{ space.capacity }} 人</p>
+            <p>介紹：{{ space.description }}</p>
+
             <hr>
         </div>
     {% endfor %}

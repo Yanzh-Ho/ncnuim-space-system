@@ -1,0 +1,78 @@
+
+{% extends "base.html" %}
+
+{% block title %}教室預約申請{% endblock %}
+
+{% block content %}
+
+<h1>教室預約申請</h1>
+
+<hr>
+
+<h2>{{ space.name }}</h2>
+
+<p>位置：{{ space.location }}</p>
+<p>容納人數：{{ space.capacity }} 人</p>
+
+<form action="/booking/{{ space.id }}/create" method="post">
+
+    <div>
+        <label>預約日期</label>
+        <input
+            type="date"
+            name="booking_date"
+            value="{{ booking_date }}"
+            required
+        >
+    </div>
+
+    <br>
+
+    <div>
+        <label>開始時間</label>
+        <input
+            type="time"
+            name="start_time"
+            value="{{ start_time }}"
+            min="08:00"
+            max="22:00"
+            required
+        >
+    </div>
+
+    <br>
+
+    <div>
+        <label>結束時間</label>
+        <input
+            type="time"
+            name="end_time"
+            min="08:00"
+            max="22:00"
+            required
+        >
+    </div>
+
+    <br>
+
+    <div>
+        <label>預約用途</label>
+        <textarea
+            name="purpose"
+            rows="4"
+            placeholder="請填寫預約用途"
+            required
+        ></textarea>
+    </div>
+
+    <br>
+
+    <button type="submit">送出預約申請</button>
+
+    <a href="/space/{{ space.id }}/calendar">
+        取消
+    </a>
+
+</form>
+
+{% endblock %}

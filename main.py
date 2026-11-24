@@ -7,6 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from db import lifespan
 from auth import currentUser
 from routes.space import router as space_router
+from routes.booking import router as booking_router
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="ncnuim-space-secret")
@@ -39,3 +40,8 @@ async def authRedirect(request: Request, exc: HTTPException):
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(
+    booking_router,
+    prefix="/booking",
+    tags=["預約借用"]
+)
