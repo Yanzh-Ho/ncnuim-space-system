@@ -65,7 +65,51 @@
         ></textarea>
     </div>
 
-    <br>
+    <hr>
+
+    <h3>物品借用</h3>
+
+    <p>如果有需要，可以勾選以下物品。</p>
+
+    {% if items %}
+
+        {% for item in items %}
+
+        <div>
+            <label>
+                <input
+                    type="checkbox"
+                    name="item_ids"
+                    value="{{ item.id }}"
+                >
+
+                {{ item.name }}
+                （總數量：{{ item.total_quantity }}）
+            </label>
+
+            <label>
+                借用數量：
+                <input
+                    type="number"
+                    name="quantity_{{ item.id }}"
+                    value="1"
+                    min="1"
+                    max="{{ item.total_quantity }}"
+                >
+            </label>
+        </div>
+
+        <br>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>目前沒有開放借用的物品。</p>
+
+    {% endif %}
+
+    <hr>
 
     <button type="submit">送出預約申請</button>
 

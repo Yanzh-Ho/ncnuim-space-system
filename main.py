@@ -8,7 +8,8 @@ from db import lifespan
 from auth import currentUser
 from routes.space import router as space_router
 from routes.booking import router as booking_router
-
+from routes.admin_booking import router as admin_booking_router
+from routes import admin_booking
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="ncnuim-space-secret")
 templates = Jinja2Templates(directory="templates")
@@ -20,7 +21,7 @@ app.include_router(accountRoute, prefix="/account")
 # 空間預約模組
 from routes.space import router as spaceRoute
 app.include_router(spaceRoute, prefix="/space")
-
+app.include_router(admin_booking.router, prefix="/admin")
 # 各模組負責人在這裡加上自己的 router，例如：
 # from routes.space import router as spaceRoute
 # app.include_router(spaceRoute, prefix="/space")

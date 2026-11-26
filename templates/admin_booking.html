@@ -1,0 +1,196 @@
+
+{% extends "base.html" %}
+
+{% block title %}管理員預約審核{% endblock %}
+
+{% block content %}
+
+<h1>管理員預約管理</h1>
+
+<p>管理員：{{ user.name }}</p>
+
+<hr>
+
+<h2>預約申請與領用管理</h2>
+
+{% if bookings %}
+
+    {% for booking in bookings %}
+
+        <div style="border:1px solid #ccc; padding:20px; margin-bottom:20px;">
+
+            <h3>預約編號：{{ booking.id }}</h3>
+
+            <p>申請人：{{ booking.applicant }}</p>
+
+            <p>預約教室：{{ booking.space_name }}</p>
+
+            <p>開始時間：{{ booking.start_time }}</p>
+
+            <p>結束時間：{{ booking.end_time }}</p>
+
+            <p>預約用途：{{ booking.purpose }}</p>
+
+            <p>申請時間：{{ booking.created_at }}</p>
+
+            <p>
+                預約狀態：
+
+                {% if booking.status == "pending" %}
+                    <span style="color:orange;">待審核</span>
+
+                {% elif booking.status == "approved" %}
+                    <span style="color:green;">已核准</span>
+                {% endif %}
+            </p>
+
+            <hr>
+
+            <h3>借用物品</h3>
+
+            {% if booking["items"] %}
+
+                {% for item in booking["items"] %}
+
+                    <div style="border:1px solid #ddd; padding:12px; margin-bottom:12px;">
+
+                        <p>
+                            <strong>{{ item["item_name"] }}</strong>
+                        </p>
+
+                        <p>借用數量：{{ item["quantity"] }}</p>
+
+                        {% if item["borrowed_at"] %}
+
+                            <p style="color:green;">
+                                借出狀態：已借出
+                            </p>
+
+                            <p>借出時間：{{ item["borrowed_at"] }}</p>
+
+                            <p>借出管理員：{{ item["borrowed_admin"] or item["borrowed_by"] }}</p>
+
+                            {% if item["returned_at"] %}
+
+                                <p style="color:green;">
+                                    歸還狀態：已歸還
+                                </p>
+
+                                <p>歸還時間：{{ item["returned_at"] }}</p>
+
+                                <p>確認歸還管理員：{{ item["returned_admin"] or item["returned_by"] }}</p>
+
+                            {% else %}
+
+                                <p style="color:orange;">
+                                    歸還狀態：尚未歸還
+                                </p>
+
+                                {% if booking.status == "approved" %}
+
+                                    <form method="POST"
+                                          action="/admin/bookings/items/{{ item['booking_item_id'] }}/return"
+                                          onsubmit="return confirm('確定要確認此物品已歸還嗎？');">
+
+                                        <button type="submit">
+                                            確認歸還
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <p style="color:orange;">
+                                借出狀態：尚未借出
+                            </p>
+
+                            {% if booking.status == "approved" %}
+
+                                <form method="POST"
+                                      action="/admin/bookings/items/{{ item['booking_item_id'] }}/borrow"
+                                      onsubmit="return confirm('確定要確認此物品已借出嗎？');">
+
+                                    <button type="submit">
+                                        確認借出
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>此預約沒有申請借用物品。</p>
+
+            {% endif %}
+
+            <hr>
+
+            {% if booking.status == "pending" %}
+
+                <h3>預約審核</h3>
+
+                <!-- 核准按鈕 -->
+                <form method="POST"
+                      action="/admin/bookings/{{ booking.id }}/approve">
+
+                    <button type="submit">
+                        核准預約
+                    </button>
+
+                </form>
+
+                <br>
+
+                <!-- 退件表單 -->
+                <form method="POST"
+                      action="/admin/bookings/{{ booking.id }}/reject">
+
+                    <label>退件原因：</label>
+
+                    <br>
+
+                    <textarea name="review_comment"
+                              required></textarea>
+
+                    <br><br>
+
+                    <button type="submit">
+                        退件
+                    </button>
+
+                </form>
+
+            {% elif booking.status == "approved" %}
+
+                <h3 style="color:green;">
+                    此預約已核准，請管理員處理領用及歸還。
+                </h3>
+
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>目前沒有待審核或已核准的預約。</p>
+
+{% endif %}
+
+<hr>
+
+<a href="/space/spaces">返回空間列表</a>
+
+{% endblock %}
