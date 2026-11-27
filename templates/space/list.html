@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}空間查詢｜IM Space{% endblock %}
+
+{% block head %}
+<style>
+	.floor-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+	.map-wrapper {
+		position: relative;
+		width: 100%;
+		max-width: 900px;
+		margin: 0 auto 24px auto;
+		border: 2px solid #ddd;
+		border-radius: 12px;
+		overflow: hidden;
+		background: #f8fafc;
+	}
+	.map-wrapper img { width: 100%; display: block; }
+	.map-pin {
+		position: absolute;
+		transform: translate(-50%, -50%);
+		background: #1e40af;
+		color: #fff;
+		padding: 4px 10px;
+		border-radius: 20px;
+		font-size: 13px;
+		font-weight: bold;
+		text-decoration: none;
+		box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+		transition: transform 0.15s, background 0.15s;
+		white-space: nowrap;
+	}
+	.map-pin:hover { transform: translate(-50%, -50%) scale(1.15); background: #dc2626; z-index: 10; }
+	.room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+	.room-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; background: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+	<h2>管院空間查詢與導覽</h2>
+	{% if user and user.role == 'admin' %}
+	<a class="btn" href="/space/create">＋ 新增教室</a>
+	{% endif %}
+</div>
+
+<!-- 樓層篩選列 -->
+<div class="floor-tabs">
+	<a class="btn {{ '' if current_floor == '' else 'ghost' }} sm" href="/space/">全部樓層</a>
+	{% for f in ['1F', '2F', '3F', '4F'] %}
+	<a class="btn {{ '' if current_floor == f else 'ghost' }} sm" href="/space/?floor={{ f }}">{{ f }}</a>
+	{% endfor %}
+</div>
+
+<!-- 管院平面圖標示區 -->
+<div class="map-wrapper">
+	<!-- 若之後有放管院平面圖 /static/floorplan.png 會自動顯示，沒有的話會顯示預設SVG建築平面底圖 -->
+	<img src="/static/floorplan.png" alt="管院平面圖"
+	     onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22900%22 height=%22420%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23f1f5f9%22/><rect x=%2240%22 y=%2240%22 width=%22820%22 height=%22340%22 fill=%22%23ffffff%22 stroke=%22%2394a3b8%22 stroke-width=%223%22/><line x1=%2240%22 y1=%22210%22 x2=%22860%22 y2=%22210%22 stroke=%22%23cbd5e1%22 stroke-width=%222%22 stroke-dasharray=%228,8%22/><text x=%22450%22 y=%22215%22 font-size=%2218%22 fill=%22%2364748b%22 text-anchor=%22middle%22>管理學院樓層平面配置圖（點擊圖釘查看 360° 全景與設備）</text></svg>';">
+
+	{% for r in rooms %}
+	<a class="map-pin" href="/space/{{ r.id }}" style="left: {{ r.map_x }}%; top: {{ r.map_y }}%;" title="{{ r.room_name }}（容納 {{ r.capacity }} 人）">
+		📍 {{ r.room_code }}
+	</a>
+	{% endfor %}
+</div>
+
+<!-- 教室卡片清單 -->
+<div class="room-grid">
+	{% for r in rooms %}
+	<div class="room-card">
+		<div style="display: flex; justify-content: space-between; align-items: center;">
+			<span style="background: #e0e7ff; color: #1e40af; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">{{ r.floor }}</span>
+			<span style="color: #64748b; font-size: 13px;">容納 {{ r.capacity }} 人</span>
+		</div>
+		<h3 style="margin: 10px 0 6px 0;">{{ r.room_code }} {{ r.room_name }}</h3>
+		<p style="font-size: 14px; color: #475569; margin-bottom: 12px;">設備：{{ r.equipment or '無特別註記' }}</p>
+		<div style="display: flex; gap: 8px;">
+			<a class="btn sm" href="/space/{{ r.id }}">查看詳情與 360°</a>
+			{% if user and user.role == 'admin' %}
+			<a class="btn ghost sm" href="/space/{{ r.id }}/edit">編輯</a>
+			{% endif %}
+		</div>
+	</div>
+	{% else %}
+	<p>目前此樓層尚無教室資料。</p>
+	{% endfor %}
+</div>
+{% endblock %}

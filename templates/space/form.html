@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ '編輯教室' if room else '新增教室' }}｜IM Space{% endblock %}
+
+{% block content %}
+<div style="max-width: 720px; margin: 0 auto;">
+	<a href="/space/" style="font-size: 14px; color: #64748b; text-decoration: none;">← 返回空間列表</a>
+	<h2 style="margin: 8px 0 16px 0;">{{ '編輯教室：' + room.room_code if room else '新增管院教室' }}</h2>
+
+	{% if msg %}
+	<div style="background: #fee2e2; color: #b91c1c; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;">{{ msg }}</div>
+	{% endif %}
+
+	<form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 14px;">
+		<div>
+			<label>教室編號 *</label>
+			<input type="text" name="room_code" value="{{ room.room_code if room else '' }}" placeholder="例如：201" required style="width: 100%; padding: 8px;">
+		</div>
+
+		<div>
+			<label>教室名稱 *</label>
+			<input type="text" name="room_name" value="{{ room.room_name if room else '' }}" placeholder="例如：管院大型階梯教室" required style="width: 100%; padding: 8px;">
+		</div>
+
+		<div style="display: flex; gap: 12px;">
+			<div style="flex: 1;">
+				<label>樓層 *</label>
+				<select name="floor" style="width: 100%; padding: 8px;">
+					{% for f in ['1F', '2F', '3F', '4F'] %}
+					<option value="{{ f }}" {{ 'selected' if room and room.floor == f else '' }}>{{ f }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div style="flex: 1;">
+				<label>容納人數</label>
+				<input type="number" name="capacity" value="{{ room.capacity if room else 40 }}" style="width: 100%; padding: 8px;">
+			</div>
+		</div>
+
+		<div>
+			<label>設備說明</label>
+			<input type="text" name="equipment" value="{{ room.equipment if room else '' }}" placeholder="例如：單槍投影機、無線麥克風、冷氣" style="width: 100%; padding: 8px;">
+		</div>
+
+		<div>
+			<label>詳細介紹</label>
+			<textarea name="description" rows="3" style="width: 100%; padding: 8px;">{{ room.description if room else '' }}</textarea>
+		</div>
+
+		<div>
+			<label>上傳 360° 全景照片（或下方直接貼圖片網址）</label>
+			<input type="file" name="pano_file" accept="image/*" style="width: 100%; padding: 6px;">
+			<input type="text" name="pano_url" value="{{ room.pano_url if room else '' }}" placeholder="圖片網址或路徑（例如 /static/pano/201.jpg）" style="width: 100%; padding: 8px; margin-top: 6px;">
+		</div>
+
+		<!-- 點擊平面圖自動計算 X/Y 座標 -->
+		<div>
+			<label>平面圖標記位置（請直接點擊下方圖片設定教室位置）</label>
+			<div id="picker-box" style="position: relative; border: 2px dashed #94a3b8; border-radius: 8px; cursor: crosshair; margin-top: 6px;">
+				<img id="picker-img" src="/static/floorplan.png" style="width: 100%; display: block;"
+				     onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22900%22 height=%22420%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23f1f5f9%22/><rect x=%2240%22 y=%2240%22 width=%22820%22 height=%22340%22 fill=%22%23ffffff%22 stroke=%22%2394a3b8%22 stroke-width=%223%22/><text x=%22450%22 y=%22215%22 font-size=%2218%22 fill=%22%2364748b%22 text-anchor=%22middle%22>點擊任意位置設定教室座標</text></svg>';">
+				<span id="picker-pin" style="position: absolute; left: {{ room.map_x if room else 50 }}%; top: {{ room.map_y if room else 50 }}%; transform: translate(-50%, -50%); font-size: 22px;">📍</span>
+			</div>
+			<div style="display: flex; gap: 12px; margin-top: 8px;">
+				<input type="number" step="0.1" id="map_x" name="map_x" value="{{ room.map_x if room else 50.0 }}" readonly style="width: 100%; padding: 6px; background: #f1f5f9;">
+				<input type="number" step="0.1" id="map_y" name="map_y" value="{{ room.map_y if room else 50.0 }}" readonly style="width: 100%; padding: 6px; background: #f1f5f9;">
+			</div>
+		</div>
+
+		<button type="submit" class="btn">儲存教室資料</button>
+	</form>
+</div>
+
+<script>
+	const pickerBox = document.getElementById('picker-box');
+	const pickerPin = document.getElementById('picker-pin');
+	const inputX = document.getElementById('map_x');
+	const inputY = document.getElementById('map_y');
+
+	pickerBox.addEventListener('click', function(e) {
+		const rect = pickerBox.getBoundingClientRect();
+		const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+		const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+		inputX.value = x;
+		inputY.value = y;
+		pickerPin.style.left = x + '%';
+		pickerPin.style.top = y + '%';
+	});
+</script>
+{% endblock %}

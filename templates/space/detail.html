@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ room.room_code }} {{ room.room_name }}｜IM Space{% endblock %}
+
+{% block head %}
+<!-- 引入 Pannellum 360 全景套件 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+<style>
+	#panorama { width: 100%; height: 450px; border-radius: 12px; border: 1px solid #cbd5e1; margin: 16px 0; }
+	.info-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+	<div>
+		<a href="/space/" style="font-size: 14px; color: #64748b; text-decoration: none;">← 返回空間列表</a>
+		<h2 style="margin-top: 4px;">{{ room.floor }}｜{{ room.room_code }} {{ room.room_name }}</h2>
+	</div>
+
+	{% if user and user.role == 'admin' %}
+	<div style="display: flex; gap: 8px;">
+		<a class="btn ghost sm" href="/space/{{ room.id }}/edit">編輯教室</a>
+		<form action="/space/{{ room.id }}/delete" method="post" onsubmit="return confirm('確定要刪除這間教室嗎？');">
+			<button type="submit" class="btn sm" style="background: #dc2626; border-color: #dc2626;">刪除教室</button>
+		</form>
+	</div>
+	{% endif %}
+</div>
+
+<!-- 360 全景瀏覽區 -->
+{% if room.pano_url %}
+<div id="panorama"></div>
+<script>
+	pannellum.viewer('panorama', {
+		"type": "equirectangular",
+		"panorama": "{{ room.pano_url }}",
+		"autoLoad": true,
+		"title": "{{ room.room_code }} {{ room.room_name }} (360° 環景)"
+	});
+</script>
+{% else %}
+<div class="info-box" style="text-align: center; color: #64748b;">此教室尚未上傳 360° 全景照片</div>
+{% endif %}
+
+<!-- 基本資訊與設備 -->
+<div class="info-box">
+	<h3>教室基本資訊</h3>
+	<p><strong>容納人數：</strong>{{ room.capacity }} 人</p>
+	<p><strong>硬體設備：</strong>{{ room.equipment or '無' }}</p>
+	<p><strong>空間說明：</strong>{{ room.description or '無' }}</p>
+</div>
+{% endblock %}

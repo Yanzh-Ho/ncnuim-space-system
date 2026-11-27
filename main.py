@@ -16,8 +16,8 @@ from routes.account import router as accountRoute
 app.include_router(accountRoute, prefix="/account")
 
 # 各模組負責人在這裡加上自己的 router，例如：
-# from routes.space import router as spaceRoute
-# app.include_router(spaceRoute, prefix="/space")
+from routes.space import router as spaceRoute
+app.include_router(spaceRoute, prefix="/space")
 
 
 @app.get("/")
